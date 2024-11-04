@@ -139,6 +139,26 @@
             font-weight: 500;
             color: #666;
         }
+        .deletion {
+            display: inline-block;
+            padding: 2px 4px;
+            margin: 0 2px;
+            border-radius: 3px;
+            background-color: #ffebee;
+            border: 1px solid #ef9a9a;
+            color: #c62828;
+        }
+        
+        .addition {
+            display: inline-block;
+            padding: 2px 4px;
+            margin: 0 2px;
+            border-radius: 3px;
+            background-color: #e8f5e9;
+            border: 1px solid #a5d6a7;
+            color: #2e7d32;
+        }
+        
     </style>
 </head>
 <body>
@@ -196,7 +216,7 @@
         const text2 = document.getElementById('text2').value;
         const mode = document.querySelector('input[name="compareMode"]:checked').value;
         const diffResult = compare(text1, text2, mode);
-        
+
         document.getElementById('result').innerHTML = diffResult; // Set HTML instead of text
     }
 

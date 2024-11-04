@@ -1,23 +1,38 @@
 package diff
 
-import (
-	"strings"
-)
+import "strings"
 
-// charDiff gets character-level differences.
+// CharDiff compares two strings and returns HTML-formatted string showing differences:
+// - Characters present in text1 but not in text2 are marked in red (deletions)
+// - Characters present in text2 but not in text1 are marked in green (additions)
+// - Matching characters are left unchanged
 func CharDiff(text1, text2 string) string {
 	var result strings.Builder
 
-	for i, c := range text1 {
-		if i < len(text2) && c == rune(text2[i]) {
-			result.WriteRune(c)
+	// Convert strings to rune slices to properly handle UTF-8 characters
+	runes1 := []rune(text1)
+	runes2 := []rune(text2)
+
+	// Process the overlapping portion of both strings
+	i := 0
+	for i < len(runes1) && i < len(runes2) {
+		if runes1[i] == runes2[i] {
+			result.WriteRune(runes1[i])
 		} else {
-			result.WriteString("<span style='color: red;'>" + string(c) + "</span>")
+			result.WriteString(`<span class="deletion">` + string(runes1[i]) + `</span>`)
+			result.WriteString(`<span class="addition">` + string(runes2[i]) + `</span>`)
 		}
+		i++
 	}
 
-	for i := len(text1); i < len(text2); i++ {
-		result.WriteString("<span style='color: green;'>" + string(text2[i]) + "</span>")
+	// Handle remaining characters in text1 (deletions)
+	for ; i < len(runes1); i++ {
+		result.WriteString(`<span class="deletion">` + string(runes1[i]) + `</span>`)
+	}
+
+	// Handle remaining characters in text2 (additions)
+	for ; i < len(runes2); i++ {
+		result.WriteString(`<span class="addition">` + string(runes2[i]) + `</span>`)
 	}
 
 	return result.String()
@@ -50,11 +65,11 @@ func WordDiff(text1, text2 string) string {
 			result.WriteString(word1 + " ")
 		} else {
 			if word1 != "" {
-				result.WriteString("<span style='color: red;'>" + word1 + "</span> ")
+				result.WriteString(`<span class="deletion">` + word1 + `</span>`)
 			}
 
 			if word2 != "" {
-				result.WriteString("<span style='color: green;'>" + word2 + "</span> ")
+				result.WriteString(`<span class="addition">` + word2 + `</span>`)
 			}
 		}
 	}
