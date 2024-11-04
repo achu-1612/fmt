@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Diff Tool</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: #333;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .dark-mode {
+            background-color: #2c2c2c;
+            color: #e0e0e0;
+        }
+        .container {
+            width: 80%;
+            margin-top: 2rem;
+            text-align: center;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            align-items: center;
+        }
+        .text-area-container {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        textarea {
+            width: 45%;
+            height: 200px;
+            padding: 1rem;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            resize: none;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .dark-mode textarea {
+            background-color: #444;
+            color: #f0f0f0;
+        }
+        .icon-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .icon-button {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 48px;
+            height: 48px;
+            background-color: #6200ea;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .icon-button:hover {
+            background-color: #3700b3;
+        }
+        #result {
+            padding: 1rem;
+            background-color: #ffffff;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .dark-mode #result {
+            background-color: #444;
+            color: #f0f0f0;
+            border-color: #888;
+        }
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            border-radius: 34px;
+            transition: background-color 0.3s;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 4px;
+            bottom: 3px;
+            background-color: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+        input:checked + .slider {
+            background-color: #6200ea;
+        }
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        .comparison-options {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .radio-label {
+            font-weight: 500;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>Text Diff Tool</h1>
+        <label class="toggle-switch">
+            <input type="checkbox" onchange="toggleDarkMode()">
+            <span class="slider"></span>
+        </label>
+    </div>
+    <div class="text-area-container">
+        <textarea id="text1" placeholder="Enter first text here..."></textarea>
+        
+        <!-- Clear and Swap Icons -->
+        <div class="icon-buttons">
+            <button class="icon-button" onclick="clearTexts()" title="Clear Texts">
+                <i class="fas fa-trash-alt"></i>
+            </button>
+            <button class="icon-button" onclick="swapText()" title="Swap Texts">
+                <i class="fas fa-exchange-alt"></i>
+            </button>
+        </div>
+        
+        <textarea id="text2" placeholder="Enter second text here..."></textarea>
+    </div>
+    <div class="comparison-options">
+        <label class="radio-label">
+            <input type="radio" name="compareMode" value="character" checked> Character Comparison
+        </label>
+        <label class="radio-label">
+            <input type="radio" name="compareMode" value="word"> Word Comparison
+        </label>
+    </div>
+
+    <button class="icon-button material-button" onclick="compareTexts()" style="margin-top: 1rem;">
+        <i class="fas fa-play"></i>
+    </button>
+    
+    <div id="result"></div>
+</div>
+
+<!-- Include wasm_exec.js for Go WASM support -->
+<script src="wasm_exec.js"></script>
+<script>
+    const go = new Go();
+    WebAssembly.instantiateStreaming(fetch("diff.wasm"), go.importObject).then((result) => {
+        go.run(result.instance);
+    });
+
+    // Function to call the WASM diff function
+    function compareTexts() {
+        const text1 = document.getElementById('text1').value;
+        const text2 = document.getElementById('text2').value;
+
+        const diffResult = window.diff(text1, text2);
+        console.log(diffResult)
+        document.getElementById('result').innerHTML = diffResult; // Set HTML instead of text
+    }
+    function toggleDarkMode() {
+        document.body.classList.toggle("dark-mode");
+    }
+
+    function clearTexts() {
+        document.getElementById('text1').value = '';
+        document.getElementById('text2').value = '';
+    }
+
+    function swapText() {
+        const text1 = document.getElementById('text1').value;
+        const text2 = document.getElementById('text2').value;
+        document.getElementById('text1').value = text2;
+        document.getElementById('text2').value = text1;
+    }
+</script>
+
+</body>
+</html>
