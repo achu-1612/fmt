@@ -1,4 +1,6 @@
 build:
 	GOOS=js GOARCH=wasm go build -o ui/main.wasm
-run:
-	goexec 'http.ListenAndServe(`:8080`, http.FileServer(http.Dir(`.`)))'
+run: docker
+	docker run -it -p 3000:80 go-wasm
+docker:
+	docker build -t go-wasm .
