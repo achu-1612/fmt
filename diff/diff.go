@@ -1,15 +1,11 @@
-//go:build js && wasm
-// +build js,wasm
-
 package diff
 
 import (
 	"strings"
-	"syscall/js"
 )
 
 // charDiff gets character-level differences.
-func charDiff(text1, text2 string) string {
+func CharDiff(text1, text2 string) string {
 	var result strings.Builder
 
 	for i, c := range text1 {
@@ -28,7 +24,7 @@ func charDiff(text1, text2 string) string {
 }
 
 // wordDiff gets word-level differences.
-func wordDiff(text1, text2 string) string {
+func WordDiff(text1, text2 string) string {
 	words1 := strings.Fields(text1)
 	words2 := strings.Fields(text2)
 
@@ -64,21 +60,4 @@ func wordDiff(text1, text2 string) string {
 	}
 
 	return result.String()
-}
-
-// Compare compares two texts and returns the differences.
-func Compare(this js.Value, p []js.Value) interface{} {
-	text1 := p[0].String()
-	text2 := p[1].String()
-	mode := p[2].String()
-
-	var diffResult string
-
-	if mode == "character" {
-		diffResult = charDiff(text1, text2)
-	} else {
-		diffResult = wordDiff(text1, text2)
-	}
-
-	return js.ValueOf(diffResult)
 }

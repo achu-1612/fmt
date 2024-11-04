@@ -186,7 +186,7 @@
 <script src="wasm_exec.js"></script>
 <script>
     const go = new Go();
-    WebAssembly.instantiateStreaming(fetch("diff.wasm"), go.importObject).then((result) => {
+    WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).then((result) => {
         go.run(result.instance);
     });
 
@@ -194,11 +194,12 @@
     function compareTexts() {
         const text1 = document.getElementById('text1').value;
         const text2 = document.getElementById('text2').value;
-
-        const diffResult = window.diff(text1, text2);
-        console.log(diffResult)
+        const mode = document.querySelector('input[name="compareMode"]:checked').value;
+        const diffResult = compare(text1, text2, mode);
+        
         document.getElementById('result').innerHTML = diffResult; // Set HTML instead of text
     }
+
     function toggleDarkMode() {
         document.body.classList.toggle("dark-mode");
     }
