@@ -23,9 +23,9 @@ func compare(this js.Value, p []js.Value) interface{} {
 	var diffResult string
 
 	if mode == "character" {
-		diffResult = diff.CharDiff(text1, text2)
+		diffResult = diff.CharByCharDiff(text1, text2)
 	} else {
-		diffResult = diff.WordDiff(text1, text2)
+		diffResult = diff.WordByWordDiff(text1, text2)
 	}
 
 	return js.ValueOf(diffResult)
