@@ -65,8 +65,8 @@
             align-items: center;
             width: 48px;
             height: 48px;
-            background-color: #6200ea;
             color: #fff;
+            background-color: #444;
             border: none;
             border-radius: 50%;
             font-size: 20px;
@@ -74,7 +74,7 @@
             transition: background-color 0.3s;
         }
         .icon-button:hover {
-            background-color: #3700b3;
+            background-color: #c47908;
         }
         #result {
             padding: 1rem;
@@ -144,9 +144,9 @@
             padding: 2px 4px;
             margin: 0 2px;
             border-radius: 3px;
-            background-color: #ffebee;
-            border: 1px solid #ef9a9a;
-            color: #c62828;
+            color: white;
+            background-color: rgba(240, 128, 128, 0.55);
+            border: 2px solid lightcoral;
         }
         
         .addition {
@@ -154,9 +154,9 @@
             padding: 2px 4px;
             margin: 0 2px;
             border-radius: 3px;
-            background-color: #e8f5e9;
-            border: 1px solid #a5d6a7;
-            color: #2e7d32;
+            background-color: rgba(144, 238, 144, 0.55);
+            border: 2px solid rgb(74, 228, 74);
+            color: white;
         }
         
     </style>
@@ -205,6 +205,12 @@
 <!-- Include wasm_exec.js for Go WASM support -->
 <script src="wasm_exec.js"></script>
 <script>
+    function toggleDarkMode() {
+        document.body.classList.toggle("dark-mode");
+    }
+
+    toggleDarkMode()
+    
     const go = new Go();
     WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).then((result) => {
         go.run(result.instance);
@@ -218,10 +224,6 @@
         const diffResult = compare(text1, text2, mode);
 
         document.getElementById('result').innerHTML = diffResult; // Set HTML instead of text
-    }
-
-    function toggleDarkMode() {
-        document.body.classList.toggle("dark-mode");
     }
 
     function clearTexts() {
