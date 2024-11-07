@@ -4,7 +4,6 @@
 package main
 
 import (
-	"fmt"
 	"syscall/js"
 
 	"github.com/achu-1612/fmt/diff"
@@ -12,7 +11,6 @@ import (
 
 // compare compares two texts and returns the differences.
 func compare(this js.Value, p []js.Value) interface{} {
-	fmt.Println(this, p)
 	if len(p) != 3 {
 		return js.Error{Value: js.Global().Get("Error").New("expected 3 arguments")}
 	}
